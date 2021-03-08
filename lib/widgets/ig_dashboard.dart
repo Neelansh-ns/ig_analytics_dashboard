@@ -11,6 +11,23 @@ class _IGDashboardState extends State<IGDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          actions: [
+            GestureDetector(
+                onTap: () async {
+                  // final cookieManager = CookieManager();
+                  // cookieManager.clearCookies();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Text('Logout',style: TextStyle(fontSize: 18),),
+                      SizedBox(width: 8,),
+                      Icon(Icons.logout),
+                    ],
+                  ),
+                ))
+          ],
           title: Center(
             child: Row(
               children: [

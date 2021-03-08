@@ -29,35 +29,58 @@ class _SignInWithInstagramState extends State<SignInWithInstagram> {
             initialData: false,
             builder: (context, snapshot) {
               if (snapshot.data) {
-                return WebView(
-                  initialUrl: _authenticateView.state.initialUrl,
-                  navigationDelegate: (NavigationRequest request) {
-                    if (request.url.startsWith(StringConstants.INSTAGRAM_REDIRECT_URI)) {
-                      if (request.url.contains('error')) print('the url error');
-                      var startIndex = request.url.indexOf('code=');
-                      var endIndex = request.url.lastIndexOf('#');
-                      var code = request.url.substring(startIndex + 5, endIndex);
-                      _authenticateView.logIn(code).then((value) {
-                        if (value) {
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (BuildContext context) => IGDashboard()));
+                return Stack(
+                  children: [
+                    WebView(
+                      initialUrl: _authenticateView.state.initialUrl,
+                      navigationDelegate: (NavigationRequest request) {
+                        if (request.url.startsWith(StringConstants.INSTAGRAM_REDIRECT_URI)) {
+                          if (request.url.contains('error')){ print('the url error');
+                          _authenticateView.closeWebView();
+                          return NavigationDecision.prevent;
+                          }
+                          var startIndex = request.url.indexOf('code=');
+                          var endIndex = request.url.lastIndexOf('#');
+                          var code = request.url.substring(startIndex + 5, endIndex);
+                          _authenticateView.logIn(code).then((value) {
+                            if (value) {
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (BuildContext context) => IGDashboard()));
+                            }
+                          });
+                          return NavigationDecision.prevent;
                         }
-                      });
-                      return NavigationDecision.prevent;
-                    }
-                    return NavigationDecision.navigate;
-                  },
-                  onPageStarted: (url) => print("Page started " + url),
-                  javascriptMode: JavascriptMode.unrestricted,
-                  gestureNavigationEnabled: true,
-                  initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+                        return NavigationDecision.navigate;
+                      },
+                      onPageStarted: (url) {
+                        print("Page started " + url);
+                        _authenticateView.isLoading(false);
+                      },
+                      javascriptMode: JavascriptMode.unrestricted,
+                      gestureNavigationEnabled: true,
+                      initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+                      onWebViewCreated: (webViewController) {
+                        webViewController.clearCache();
+                      },
+                    ),
+                    StreamBuilder<bool>(
+                      stream: _authenticateView.state.isLoading,
+                      initialData: false,
+                      builder: (context, snapshot) {
+                        if(snapshot.data) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        return Container();
+                      }
+                    )
+                  ],
                 );
               }
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/1200px-Instagram_logo_2016.svg.png',
+                  Image.asset(
+                    'assets/insta.webp',
                     height: 120,
                     width: 120,
                   ),
@@ -69,15 +92,15 @@ class _SignInWithInstagramState extends State<SignInWithInstagram> {
                       _authenticateView.signInWithInstagram();
                     },
                     child: Container(
-                      height: 56,
-                      width: 120,
+                      height: 48,
+                      width: 240,
                       decoration: BoxDecoration(
                           color: Color(0xffe9505f),
-                          borderRadius: BorderRadius.all(Radius.circular(12))),
+                          borderRadius: BorderRadius.all(Radius.circular(4))),
                       child: Center(
                           child: Text(
                         'Sign In',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white,fontSize: 20),
                       )),
                     ),
                   ),

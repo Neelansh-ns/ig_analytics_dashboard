@@ -5,6 +5,7 @@ import 'package:ig_analytics_dashboard/utils/constants.dart';
 import 'package:ig_analytics_dashboard/utils/string_helper.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class AuthenticateView extends BaseView<AuthenticateViewState> {
   @override
@@ -22,6 +23,7 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
 
   Future<void> signInWithInstagram() async {
     state._showSignInWebView.add(true);
+    isLoading(true);
     print('Sign In Clicked');
   }
 
@@ -33,7 +35,7 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
     return http.get(uri).then((response) {
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
-      return true;
+      return response.statusCode == 200;
     }).onError((error, stackTrace) {
       print('Error caught in login(): $error $stackTrace');
       return false;
@@ -45,9 +47,16 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
   closeWebView() {
     state._showSignInWebView.add(false);
   }
+
+  isLoading(bool isLoading) {
+    state._isLoading.add(isLoading);
+  }
 }
 
 class AuthenticateViewState extends BaseViewState {
+  BehaviorSubject<bool> _isLoading = BehaviorSubject.seeded(false);
+
+  Stream<bool> get isLoading => _isLoading;
   String initialUrl =
       'https://www.facebook.com/v10.0/dialog/oauth?client_id=${StringConstants.INSTAGRAM_APP_ID}&redirect_uri=${StringConstants.INSTAGRAM_REDIRECT_URI}&scope=pages_show_list,instagram_basic,instagram_manage_insights';
 
@@ -65,6 +74,7 @@ class AuthenticateViewState extends BaseViewState {
 
   @override
   dispose() {
+    _isLoading.close();
     _showSignInWebView.close();
   }
 }
