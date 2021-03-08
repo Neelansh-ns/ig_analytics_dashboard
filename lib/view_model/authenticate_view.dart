@@ -5,7 +5,6 @@ import 'package:ig_analytics_dashboard/factory/base_view.dart';
 import 'package:ig_analytics_dashboard/factory/base_view_state.dart';
 import 'package:ig_analytics_dashboard/models/user.dart';
 import 'package:ig_analytics_dashboard/utils/constants.dart';
-import 'package:ig_analytics_dashboard/utils/string_helper.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,10 +17,6 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
   Future<bool> isUserSignedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return Future.value(false);
-    // state._userId = prefs.getString('userId');
-    // state._token = prefs.getString('token');
-    // print(state.userId.isValid && state.token.isValid);
-    // return (state.userId.isValid && state.token.isValid);
   }
 
   Future<void> signInWithInstagram() async {
@@ -64,9 +59,9 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
 }
 
 class AuthenticateViewState extends BaseViewState {
-
   Stream<User> get user => _user;
   BehaviorSubject<User> _user = BehaviorSubject();
+
   User get userValue => _user.value;
 
   BehaviorSubject<bool> _isLoading = BehaviorSubject.seeded(false);
@@ -76,7 +71,9 @@ class AuthenticateViewState extends BaseViewState {
       'https://www.facebook.com/v10.0/dialog/oauth?client_id=${StringConstants.INSTAGRAM_APP_ID}&redirect_uri=${StringConstants.INSTAGRAM_REDIRECT_URI}&scope=pages_show_list,instagram_basic,instagram_manage_insights';
 
   BehaviorSubject<bool> _showSignInWebView = BehaviorSubject.seeded(false);
+
   bool get showSignInWebViewValue => _showSignInWebView.value;
+
   Stream<bool> get showSignInWebView => _showSignInWebView;
 
   // bool get showSignInWebViewValue => _showSignInWebView.value;
