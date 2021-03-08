@@ -1,5 +1,6 @@
 import 'package:ig_analytics_dashboard/factory/base_view.dart';
 import 'package:ig_analytics_dashboard/view_model/authenticate_view.dart';
+import 'package:ig_analytics_dashboard/view_model/ig_dashboard_view.dart';
 
 
 class ViewFactory {
@@ -28,7 +29,7 @@ class ViewFactory {
   BaseView _get<T>() {
     switch (T) {
       case AuthenticateView: return AuthenticateView();
-      case AuthenticateView: return AuthenticateView();
+      case IgDashBoardView: return IgDashBoardView();
       default:
         return throw Exception("View is not created for $T");
     }

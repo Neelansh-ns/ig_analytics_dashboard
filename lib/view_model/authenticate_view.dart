@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:ig_analytics_dashboard/factory/base_view.dart';
 import 'package:ig_analytics_dashboard/factory/base_view_state.dart';
+import 'package:ig_analytics_dashboard/models/user.dart';
 import 'package:ig_analytics_dashboard/utils/constants.dart';
 import 'package:ig_analytics_dashboard/utils/string_helper.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class AuthenticateView extends BaseView<AuthenticateViewState> {
   @override
@@ -15,10 +17,11 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
 
   Future<bool> isUserSignedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    state._userId = prefs.getString('userId');
-    state._token = prefs.getString('token');
-    print(state.userId.isValid && state.token.isValid);
-    return (state.userId.isValid && state.token.isValid);
+    return Future.value(false);
+    // state._userId = prefs.getString('userId');
+    // state._token = prefs.getString('token');
+    // print(state.userId.isValid && state.token.isValid);
+    // return (state.userId.isValid && state.token.isValid);
   }
 
   Future<void> signInWithInstagram() async {
@@ -29,12 +32,15 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
 
   Future<bool> logIn(String code) async {
     print(code);
-    var url = 'https://6etkn5v0ik.execute-api.us-east-1.amazonaws.com/login?code=$code';
+    var url = '${StringConstants.LAMBDA_ENDPOINT}/login?code=$code';
     Uri uri = Uri.parse(url);
     print(uri);
     return http.get(uri).then((response) {
       print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Response body: ${jsonDecode(response.body)}');
+      saveUserData(User(
+          name: jsonDecode(response.body)['user']['body']['name'],
+          userId: (jsonDecode(response.body)['user']['body']['id']).toString()));
       return response.statusCode == 200;
     }).onError((error, stackTrace) {
       print('Error caught in login(): $error $stackTrace');
@@ -51,9 +57,18 @@ class AuthenticateView extends BaseView<AuthenticateViewState> {
   isLoading(bool isLoading) {
     state._isLoading.add(isLoading);
   }
+
+  void saveUserData(User user) {
+    state._user.add(user);
+  }
 }
 
 class AuthenticateViewState extends BaseViewState {
+
+  Stream<User> get user => _user;
+  BehaviorSubject<User> _user = BehaviorSubject();
+  User get userValue => _user.value;
+
   BehaviorSubject<bool> _isLoading = BehaviorSubject.seeded(false);
 
   Stream<bool> get isLoading => _isLoading;
@@ -61,20 +76,15 @@ class AuthenticateViewState extends BaseViewState {
       'https://www.facebook.com/v10.0/dialog/oauth?client_id=${StringConstants.INSTAGRAM_APP_ID}&redirect_uri=${StringConstants.INSTAGRAM_REDIRECT_URI}&scope=pages_show_list,instagram_basic,instagram_manage_insights';
 
   BehaviorSubject<bool> _showSignInWebView = BehaviorSubject.seeded(false);
-
+  bool get showSignInWebViewValue => _showSignInWebView.value;
   Stream<bool> get showSignInWebView => _showSignInWebView;
 
-  bool get showSignInWebViewValue => _showSignInWebView.value;
-  String _userId;
-  String _token;
-
-  String get userId => _userId;
-
-  String get token => _token;
+  // bool get showSignInWebViewValue => _showSignInWebView.value;
 
   @override
   dispose() {
     _isLoading.close();
     _showSignInWebView.close();
+    _user.close();
   }
 }

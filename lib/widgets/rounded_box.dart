@@ -13,7 +13,7 @@ class RoundedBoxForNumber extends StatelessWidget {
       width: 150,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          color: Colors.lightBlue.withOpacity(0.05)),
+          color: Colors.pinkAccent.withOpacity(0.1)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
