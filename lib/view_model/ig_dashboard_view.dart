@@ -15,7 +15,7 @@ class IgDashBoardView extends BaseView<IgDashBoardViewState> {
   }
 
   void getUserData(String userId) {
-    var url = '${StringConstants.LAMBDA_ENDPOINT}//userDetails?userId=$userId';
+    var url = '${StringConstants.LAMBDA_ENDPOINT}/userDetails?userId=$userId';
     Uri uri = Uri.parse(url);
     print(uri);
     http.get(uri).then((response) {

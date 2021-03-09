@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class RoundedBoxForNumber extends StatelessWidget {
   final String title;
-  final int value;
+  final String value;
 
   RoundedBoxForNumber({this.title, this.value});
 

@@ -1,7 +1,4 @@
 class UserDetails {
-  String reach;
-  String impressions;
-  String profileViews;
   int totalPosts;
   String biography;
   String username;
@@ -9,11 +6,9 @@ class UserDetails {
   String pageName;
   int followsCount;
   int followersCount;
+  UserInsights insights;
 
   UserDetails({
-    this.reach,
-    this.impressions,
-    this.profileViews,
     this.totalPosts,
     this.biography,
     this.username,
@@ -21,5 +16,24 @@ class UserDetails {
     this.followersCount,
     this.profilePic,
     this.pageName,
+    this.insights,
   });
+}
+
+class UserInsights {
+  List<double> impressions;
+  List<double> profileViews;
+  List<double> reach;
+
+  UserInsights({
+    this.impressions,
+    this.profileViews,
+    this.reach,
+  });
+
+  double get totalReach => reach.reduce((value, element) => value + element);
+
+  double get totalProfileViews => reach.reduce((value, element) => value + element);
+
+  double get totalImpression => reach.reduce((value, element) => value + element);
 }
