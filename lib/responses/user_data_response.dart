@@ -39,6 +39,7 @@ class GetUserDataResponse {
           followersCount: this.account.body.followersCount,
           followsCount: this.account.body.followsCount,
           profilePic: this.account.body.profilePictureUrl,
+          instgramBusinessAccountId: this.account.body.id,
           pageName: this.account.body.name,
           insights: UserInsights(
             impressions: this

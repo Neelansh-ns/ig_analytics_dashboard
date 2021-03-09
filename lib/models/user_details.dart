@@ -3,12 +3,14 @@ class UserDetails {
   String biography;
   String username;
   String profilePic;
+  String instgramBusinessAccountId;
   String pageName;
   int followsCount;
   int followersCount;
   UserInsights insights;
 
   UserDetails({
+    this.instgramBusinessAccountId,
     this.totalPosts,
     this.biography,
     this.username,
